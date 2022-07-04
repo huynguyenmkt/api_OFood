@@ -1,31 +1,46 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const FoodSchema = new Schema({
-    name: {
-        type: String
+const FoodSchema = new Schema(
+    {
+        name: {
+            type: String,
+        },
+        description: {
+            type: String,
+        },
+        price: {
+            type: Number,
+        },
+        sale: {
+            type: Number,
+        },
+        image: {
+            type: String,
+        },
+        buys: {
+            type: Number,
+            default: 0,
+        },
+        status: {
+            type: Number,
+            default: 1,
+        },
+        category: {
+            type: Schema.Types.ObjectId,
+            ref: 'Category',
+        },
+        reviews: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Review',
+            },
+        ],
     },
-    description: {
-        type: String
-    },
-    price:{
-        type: Number
-    },
-    sale: {
-        type: Number
-    },
-    image: {
-        type: String
-    },
-    category: {
-        type: Schema.Types.ObjectId,
-        ref: 'Category'
-    },
-    reviews:[{
-        type: Schema.Types.ObjectId,
-        ref: 'Review'
-    }]
-})
+    {
+        timestamps: true,
+    }
+)
 
 const Food = mongoose.model('Food', FoodSchema)
 

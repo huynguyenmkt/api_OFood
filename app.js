@@ -23,6 +23,7 @@ const app = express()
 const port = process.env.PORT
 
 const userRoute = require('./routes/user')
+const foodRoute = require('./routes/food')
 
 //Middlewares
 app.use(logger('dev'))
@@ -30,6 +31,7 @@ app.use(bodyParser.json())
 
 //Routes
 app.use('/api/users', userRoute)
+app.use('/api/food', foodRoute)
 
 app.get('/', (req, res) => {
     return res.status(200).json({

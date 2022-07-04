@@ -42,10 +42,16 @@ const getUser = async (req, res, next) => {
     try {
         const { userId } = req.value.params
         const user = await User.findById(userId)
+        if (user === null)
+            return res.status(404).json({
+                status: false,
+                message: 'user not found!',
+                data: [],
+            })
         return res.status(200).json({
             status: true,
             message: 'get users success!',
-            data: [user],
+            data: user,
         })
     } catch (error) {
         next(new Error('Not found userID'))

@@ -55,6 +55,17 @@ const schemas = {
         image: Joi.string(),
         role: Joi.number(),
     }),
+    foodSchema: Joi.object({
+        name: Joi.string().required(),
+        description: Joi.string(),
+        price: Joi.number().required(),
+        sale: Joi.number(),
+        image: Joi.string(),
+        status: Joi.number(),
+        category: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+    }),
 }
 
 module.exports = {
