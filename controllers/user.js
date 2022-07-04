@@ -69,7 +69,7 @@ const updateUser = async (req, res, next) => {
             data: [],
         })
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         if (error.codeName === 'DuplicateKey') {
             // console.log(JSON.stringify(error[Object.keys(error)[4]]))
             const msg =

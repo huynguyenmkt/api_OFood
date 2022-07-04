@@ -62,9 +62,10 @@ const schemas = {
         sale: Joi.number(),
         image: Joi.string(),
         status: Joi.number(),
-        category: Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required(),
+        category: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+    }),
+    categorySchema: Joi.object({
+        name: Joi.string().required(),
     }),
 }
 

@@ -1,11 +1,27 @@
 const Food = require('../models/Food')
-
+const Category = require('../models/Category')
 //CREATE
 const newFood = async (req, res, next) => {
     // console.log(req.body)
     try {
         const newFood = new Food(req.value.body)
-        await newFood.save()
+        const categoryId = newFood.category
+        if (categoryId) {
+            console.log(categoryId)
+            const category = await Category.findById(categoryId)
+            if (category === null) {
+                return res.status(404).json({
+                    status: false,
+                    message: 'category is not exits',
+                    data: [],
+                })
+            }
+            await newFood.save()
+            category.foods.push(newFood)
+            await category.save()
+        } else {
+            await newFood.save()
+        }
         return res.status(201).json({
             status: true,
             message: 'create food success!',
