@@ -26,9 +26,11 @@ const UserSchema = new Schema(
         password: {
             type: String,
             required: true,
+            select: false,
         },
         role: {
             type: Number,
+            select: false,
         },
         image: {
             type: String,

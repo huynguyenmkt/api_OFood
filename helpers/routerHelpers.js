@@ -67,6 +67,15 @@ const schemas = {
     categorySchema: Joi.object({
         name: Joi.string().required(),
     }),
+    cartSchema: Joi.object({
+        quantity: Joi.number().required(),
+        food: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+        user: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+    }),
 }
 
 module.exports = {

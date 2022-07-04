@@ -25,6 +25,7 @@ const port = process.env.PORT
 const userRoute = require('./routes/user')
 const foodRoute = require('./routes/food')
 const categoryRoute = require('./routes/category')
+const cartRoute = require('./routes/cart')
 
 //Middlewares
 app.use(logger('dev'))
@@ -34,6 +35,7 @@ app.use(bodyParser.json())
 app.use('/api/users', userRoute)
 app.use('/api/food', foodRoute)
 app.use('/api/category', categoryRoute)
+app.use('/api/cart', cartRoute)
 
 app.get('/', (req, res) => {
     return res.status(200).json({

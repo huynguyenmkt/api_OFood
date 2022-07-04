@@ -1,19 +1,24 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const CartSchema = new Schema({
-    quantity:{
-        type: Number
+const CartSchema = new Schema(
+    {
+        quantity: {
+            type: Number,
+        },
+        food: {
+            type: Schema.Types.ObjectId,
+            ref: 'Food',
+        },
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        },
     },
-    food:{
-        type: Schema.Types.ObjectId,
-        ref: 'Food'
-    },
-    user:{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+    {
+        timestamps: true,
     }
-})
+)
 
 const Cart = mongoose.model('Cart', CartSchema)
 
