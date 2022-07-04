@@ -4,37 +4,48 @@ const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
     name:{
-        type: String
+        type: String,
+        required: true
     },
     email: {
-        type: String
+        type: String,
+        unique: true,
+        required: true
     },
     phone: {
-        type: String
+        type: String,
+        unique: true,
+        required: true
     },
     userName: {
-        type: String
+        type: String,
+        unique: true,
+        required: true
     },
     password: {
-        type: String
+        type: String,
+        required: true
     },
     role: {
         type: Number
     },
-    // address: [{
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Address'
-    // }],
-    // cart: [{
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Cart'
-    // }],
-    // bills: [
-    //     {
-    //         type: Schema.Types.ObjectId,
-    //         ref: 'Bill'
-    //     }
-    // ]
+    image: {
+        type: String
+    },
+    address: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Address'
+    }],
+    cart: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Cart'
+    }],
+    bills: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Bill'
+        }
+    ]
 })
 
 const User = mongoose.model('User',UserSchema)
