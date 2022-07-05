@@ -31,5 +31,8 @@ router
         validateParam(schemas.idSchema, 'userId'),
         userController.getAllAddress
     )
+router
+    .route('/:userId/bills')
+    .get(validateParam(schemas.idSchema, 'userId'), userController.getAllBills)
 
 module.exports = router

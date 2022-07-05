@@ -98,6 +98,28 @@ const getAllAddress = async (req, res, next) => {
         next(error)
     }
 }
+const getAllBills = async (req, res, next) => {
+    try {
+        const { userId } = req.value.params
+        const user = await User.findById(userId).populate({
+            path: 'bills',
+            populate: { path: 'billInfos' },
+        })
+        if (user === null)
+            return res.status(404).json({
+                status: false,
+                message: 'user not found!',
+                data: [],
+            })
+        return res.status(200).json({
+            status: true,
+            message: 'get bills success!',
+            data: user.bills,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 //UPDATE
 const updateUser = async (req, res, next) => {
     try {
@@ -136,5 +158,6 @@ module.exports = {
     getUser,
     getAllCart,
     getAllAddress,
+    getAllBills,
     updateUser,
 }

@@ -53,6 +53,7 @@ const schemas = {
         userName: Joi.string().required(),
         password: Joi.string().required(),
         image: Joi.string(),
+        birthday: Joi.string(),
         role: Joi.number(),
     }),
     foodSchema: Joi.object({
@@ -84,6 +85,15 @@ const schemas = {
         country: Joi.string().required(),
         status: Joi.number(),
         user: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+    }),
+    billSchema: Joi.object({
+        status: Joi.number(),
+        user: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+        address: Joi.string()
             .regex(/^[0-9a-fA-F]{24}$/)
             .required(),
     }),

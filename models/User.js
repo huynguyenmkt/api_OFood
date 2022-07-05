@@ -35,6 +35,9 @@ const UserSchema = new Schema(
         image: {
             type: String,
         },
+        birthday: {
+            type: String,
+        },
         address: [
             {
                 type: Schema.Types.ObjectId,
