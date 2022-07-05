@@ -26,6 +26,7 @@ const userRoute = require('./routes/user')
 const foodRoute = require('./routes/food')
 const categoryRoute = require('./routes/category')
 const cartRoute = require('./routes/cart')
+const addressRoute = require('./routes/address')
 
 //Middlewares
 app.use(logger('dev'))
@@ -36,6 +37,7 @@ app.use('/api/users', userRoute)
 app.use('/api/food', foodRoute)
 app.use('/api/category', categoryRoute)
 app.use('/api/cart', cartRoute)
+app.use('/api/address', addressRoute)
 
 app.get('/', (req, res) => {
     return res.status(200).json({

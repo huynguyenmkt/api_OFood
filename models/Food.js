@@ -22,12 +22,10 @@ const FoodSchema = new Schema(
         buys: {
             type: Number,
             default: 0,
-            select: false,
         },
         status: {
             type: Number,
             default: 1,
-            select: false,
         },
         category: {
             type: Schema.Types.ObjectId,

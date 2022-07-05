@@ -76,6 +76,17 @@ const schemas = {
             .regex(/^[0-9a-fA-F]{24}$/)
             .required(),
     }),
+    addressSchema: Joi.object({
+        houseNumber: Joi.string(),
+        street: Joi.string().required(),
+        district: Joi.string().required(),
+        city: Joi.string().required(),
+        country: Joi.string().required(),
+        status: Joi.number(),
+        user: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+    }),
 }
 
 module.exports = {

@@ -20,7 +20,7 @@ const AddressSchema = new Schema(
         },
         status: {
             type: Number,
-            select: false,
+            default: 1,
         },
         user: {
             type: Schema.Types.ObjectId,

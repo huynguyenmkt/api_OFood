@@ -57,12 +57,58 @@ const getUser = async (req, res, next) => {
         next(new Error('Not found userID'))
     }
 }
+const getAllCart = async (req, res, next) => {
+    try {
+        const { userId } = req.value.params
+        const user = await User.findById(userId).populate('cart')
+        if (user === null)
+            return res.status(404).json({
+                status: false,
+                message: 'user not found!',
+                data: [],
+            })
+        return res.status(200).json({
+            status: true,
+            message: 'get carts success!',
+            data: user.cart,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+const getAllAddress = async (req, res, next) => {
+    try {
+        const { userId } = req.value.params
+        const user = await User.findById(userId).populate(
+            'address',
+            '-user -status'
+        )
+        if (user === null)
+            return res.status(404).json({
+                status: false,
+                message: 'user not found!',
+                data: [],
+            })
+        return res.status(200).json({
+            status: true,
+            message: 'get address success!',
+            data: user.address,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 //UPDATE
 const updateUser = async (req, res, next) => {
     try {
         const { userId } = req.value.params
         const newUser = req.value.body
         const user = await User.findByIdAndUpdate(userId, newUser)
+        if (user === null) {
+            const err = new Error('user is not exits')
+            err.status = 404
+            throw err
+        }
         return res.status(200).json({
             status: true,
             message: 'update users success!',
@@ -88,5 +134,7 @@ module.exports = {
     getAllUser,
     newUser,
     getUser,
+    getAllCart,
+    getAllAddress,
     updateUser,
 }

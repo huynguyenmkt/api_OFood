@@ -21,5 +21,15 @@ router
         validateBody(schemas.userSchema),
         userController.updateUser
     )
+router
+    .route('/:userId/cart')
+    .get(validateParam(schemas.idSchema, 'userId'), userController.getAllCart)
+
+router
+    .route('/:userId/address')
+    .get(
+        validateParam(schemas.idSchema, 'userId'),
+        userController.getAllAddress
+    )
 
 module.exports = router
