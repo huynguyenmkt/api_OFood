@@ -97,6 +97,16 @@ const schemas = {
             .regex(/^[0-9a-fA-F]{24}$/)
             .required(),
     }),
+    reviewSchema: Joi.object({
+        rate: Joi.number().required(),
+        comment: Joi.string(),
+        user: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+        food: Joi.string()
+            .regex(/^[0-9a-fA-F]{24}$/)
+            .required(),
+    }),
 }
 
 module.exports = {
