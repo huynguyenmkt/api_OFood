@@ -8,11 +8,22 @@ const {
     schemas,
 } = require('../helpers/routerHelpers')
 
+const passport = require('passport')
+const passportConfig = require('../middlewares/passport')
+
 router
     .route('/')
     .get(userController.getAllUser)
     .post(validateBody(schemas.userSchema), userController.newUser)
-
+router
+    .route('/login')
+    .post(validateBody(schemas.loginSchema), userController.loginUser)
+router
+    .route('/secret')
+    .get(
+        passport.authenticate('jwt', { session: false }),
+        userController.secret
+    )
 router
     .route('/:userId')
     .get(validateParam(schemas.idSchema, 'userId'), userController.getUser)

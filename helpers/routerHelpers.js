@@ -56,6 +56,10 @@ const schemas = {
         birthday: Joi.string(),
         role: Joi.number(),
     }),
+    loginSchema: Joi.object({
+        userName: Joi.string().required(),
+        password: Joi.string().required(),
+    }),
     foodSchema: Joi.object({
         name: Joi.string().required(),
         description: Joi.string(),

@@ -1,11 +1,33 @@
 const User = require('../models/User')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
+const secretString = process.env.JWT_SECRET
+
+const encodedToken = (userId) => {
+    return jwt.sign(
+        {
+            sub: userId,
+        },
+        secretString,
+        {
+            expiresIn: '10d',
+        }
+    )
+}
 //CREATE
 const newUser = async (req, res, next) => {
     // console.log(req.body)
     try {
+        const salt = await bcrypt.genSalt(10)
+        const hashed = await bcrypt.hash(req.value.body.password, salt)
+
         const newUser = new User(req.value.body)
+        newUser.password = hashed
         await newUser.save()
+        newUser.password = undefined
+        const token = encodedToken(newUser._id)
+        res.setHeader('Authorization', token)
         return res.status(201).json({
             status: true,
             message: 'create user success!',
@@ -26,6 +48,42 @@ const newUser = async (req, res, next) => {
 }
 
 //READ
+const loginUser = async (req, res, next) => {
+    try {
+        const userName = req.value.body.userName
+        const password = req.value.body.password
+        const user = await User.findOne({ userName: userName })
+        if (user === null) {
+            const err = new Error('user name or password is wrong')
+            err.status = 404
+            throw err
+        }
+        const validPassword = await bcrypt.compare(password, user.password)
+        if (!validPassword) {
+            const err = new Error('user name or password is wrong')
+            err.status = 404
+            throw err
+        }
+
+        user.password = undefined
+        const token = encodedToken(user._id)
+        res.setHeader('Authorization', token)
+        return res.status(200).json({
+            status: true,
+            message: 'login success!',
+            data: user,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+const secret = async (req, res, next) => {
+    res.status(200).json({
+        status: true,
+        message: 'secret success',
+        data: req.user,
+    })
+}
 const getAllUser = async (req, res, next) => {
     try {
         const users = await User.find({})
@@ -155,6 +213,8 @@ const updateUser = async (req, res, next) => {
 module.exports = {
     getAllUser,
     newUser,
+    loginUser,
+    secret,
     getUser,
     getAllCart,
     getAllAddress,
