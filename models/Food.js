@@ -30,6 +30,7 @@ const FoodSchema = new Schema(
         category: {
             type: Schema.Types.ObjectId,
             ref: 'Category',
+            default: null,
         },
         reviews: [
             {

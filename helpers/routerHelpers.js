@@ -69,6 +69,15 @@ const schemas = {
         status: Joi.number(),
         category: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
     }),
+    foodUpdateSchema: Joi.object({
+        name: Joi.string(),
+        description: Joi.string(),
+        price: Joi.number(),
+        sale: Joi.number(),
+        image: Joi.string(),
+        status: Joi.number(),
+        category: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+    }),
     categorySchema: Joi.object({
         name: Joi.string().required(),
     }),
@@ -103,13 +112,17 @@ const schemas = {
     }),
     reviewSchema: Joi.object({
         rate: Joi.number().required(),
-        comment: Joi.string(),
-        user: Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required(),
+        comment: Joi.string().allow(''),
+        user: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
         food: Joi.string()
             .regex(/^[0-9a-fA-F]{24}$/)
             .required(),
+    }),
+    reviewUpdateSchema: Joi.object({
+        rate: Joi.number().required(),
+        comment: Joi.string().allow(''),
+        user: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+        food: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
     }),
 }
 

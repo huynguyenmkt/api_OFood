@@ -7,11 +7,16 @@ const {
     validateParam,
     schemas,
 } = require('../helpers/routerHelpers')
+const middlewareControllers = require('../middlewares/auth')
 
 router
     .route('/')
     .get(reviewController.getAllReview)
-    .post(validateBody(schemas.reviewSchema), reviewController.newReview)
+    .post(
+        middlewareControllers.verifyToken,
+        validateBody(schemas.reviewSchema),
+        reviewController.newReview
+    )
 
 router
     .route('/:reviewId')
@@ -21,11 +26,13 @@ router
     )
     .put(
         validateParam(schemas.idSchema, 'reviewId'),
-        validateBody(schemas.reviewSchema),
+        middlewareControllers.verifyToken,
+        validateBody(schemas.reviewUpdateSchema),
         reviewController.updateReview
     )
     .delete(
         validateParam(schemas.idSchema, 'reviewId'),
+        middlewareControllers.verifyToken,
         reviewController.deleteReview
     )
 

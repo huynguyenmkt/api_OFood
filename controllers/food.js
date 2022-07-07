@@ -4,10 +4,16 @@ const Category = require('../models/Category')
 const newFood = async (req, res, next) => {
     // console.log(req.body)
     try {
+        const user = req.user
+        if (user.role >= 2) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const newFood = new Food(req.value.body)
         const categoryId = newFood.category
         if (categoryId) {
-            console.log(categoryId)
+            // console.log(categoryId)
             const category = await Category.findById(categoryId)
             if (category === null) {
                 return res.status(404).json({
@@ -83,9 +89,29 @@ const getFood = async (req, res, next) => {
 // UPDATE
 const updateFood = async (req, res, next) => {
     try {
+        const user = req.user
+        if (user.role >= 2) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const { foodId } = req.value.params
         const newFood = req.value.body
+        const categoryId = req.value.body.category
+        if (categoryId) {
+            const category = await Category.findById(categoryId)
+            if (category === null) {
+                const err = new Error('category is not exits')
+                err.status = 404
+                throw err
+            }
+        }
         const food = await Food.findByIdAndUpdate(foodId, newFood)
+        if (food === null) {
+            const err = new Error('food is not exits')
+            err.status = 404
+            throw err
+        }
         return res.status(200).json({
             status: true,
             message: 'update foods success!',
@@ -116,7 +142,7 @@ const incBuysFood = async (req, res, next) => {
             })
 
         newFood.buys += 1
-        const food = await Food.findByIdAndUpdate(foodId, newFood)
+        await newFood.save()
         return res.status(200).json({
             status: true,
             message: 'increase buys foods success!',
@@ -129,6 +155,12 @@ const incBuysFood = async (req, res, next) => {
 //DELETE
 const deleteFood = async (req, res, next) => {
     try {
+        const user = req.user
+        if (user.role >= 2) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const { foodId } = req.value.params
         const newFood = await Food.findById(foodId)
 
@@ -140,7 +172,7 @@ const deleteFood = async (req, res, next) => {
             })
 
         newFood.status = 0
-        const food = await Food.findByIdAndUpdate(foodId, newFood)
+        await newFood.save()
 
         return res.status(200).json({
             status: true,

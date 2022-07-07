@@ -7,28 +7,17 @@ const User = require('../models/User')
 const newReview = async (req, res, next) => {
     // console.log(req.body)
     try {
+        const user = req.user
         const foodId = req.value.body.food
-        const userId = req.value.body.user
 
         const food = await Food.findById(foodId)
-        const user = await User.findById(userId)
-        if (user === null) {
-            const err = new Error('user is not exits')
-            err.status = 404
-            throw err
-        }
         if (food === null) {
             const err = new Error('food is not exits')
             err.status = 404
             throw err
         }
-        // const bill = await Bill.find({ user: user }).populate('billInfos')
-        // const hasFoodInBillInfos = bill.billInfos.find(bill=> bill.food === foodId)? true : false
-        // if (!hasFoodInBillInfos){
-
-        // }
-        // console.log(bill)
         const newReview = new Review(req.value.body)
+        newReview.user = user._id
         await newReview.save()
         food.reviews.push(newReview._id)
         await food.save()
@@ -76,29 +65,23 @@ const getReview = async (req, res, next) => {
 //UPDATE
 const updateReview = async (req, res, next) => {
     try {
-        const { reviewId } = req.value.params
-        const foodId = req.value.body.food
-        const userId = req.value.body.user
+        const user = req.user
 
-        const food = await Food.findById(foodId)
-        const user = await User.findById(userId)
-        if (user === null) {
-            const err = new Error('user is not exits')
-            err.status = 404
-            throw err
-        }
-        if (food === null) {
-            const err = new Error('food is not exits')
-            err.status = 404
-            throw err
-        }
+        const { reviewId } = req.value.params
+
         const newReview = req.value.body
-        const review = await Review.findByIdAndUpdate(reviewId, newReview)
+        const review = await Review.findById(reviewId)
         if (review === null) {
             const err = new Error('review is not exits')
             err.status = 404
             throw err
         }
+        if (review.user.toString() != user._id.toString()) {
+            const err = new Error('you are not review owner')
+            err.status = 400
+            throw err
+        }
+        await review.updateOne(newReview)
         return res.status(200).json({
             status: true,
             message: 'update Reviews success!',
@@ -111,13 +94,20 @@ const updateReview = async (req, res, next) => {
 //DELETE
 const deleteReview = async (req, res, next) => {
     try {
+        const user = req.user
         const { reviewId } = req.value.params
-        const review = await Review.findByIdAndDelete(reviewId)
+        const review = await Review.findById(reviewId)
         if (review === null) {
             const err = new Error('review is not exits')
             err.status = 404
             throw err
         }
+        if (review.user.toString() != user._id.toString()) {
+            const err = new Error('you are not review owner')
+            err.status = 400
+            throw err
+        }
+        await review.deleteOne()
         await Food.updateMany(
             { reviews: reviewId },
             {

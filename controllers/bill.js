@@ -45,6 +45,8 @@ const newBill = async (req, res, next) => {
                 quantity: item.quantity,
                 priceOrder,
             })
+            food.buys += item.quantity
+            await food.save()
             await newBillInfo.save()
             newBill.billInfos.push(newBillInfo._id)
         }
@@ -112,7 +114,7 @@ const getBill = async (req, res, next) => {
 const updateBill = async (req, res, next) => {
     try {
         const userAdmin = req.user
-        if (userAdmin.role !== 0) {
+        if (userAdmin.role >= 2) {
             const err = new Error("you don't have access to this service")
             err.status = 400
             throw err
@@ -120,13 +122,21 @@ const updateBill = async (req, res, next) => {
         const { billId } = req.value.params
         const newBill = req.value.body
 
-        const bill = await Bill.findByIdAndUpdate(billId, newBill)
+        const bill = await Bill.findByIdAndUpdate(billId, newBill).populate(
+            'billInfos'
+        )
         if (bill === null) {
             const err = new Error('bill is not exits')
             err.status = 404
             throw err
         }
-
+        if (newBill.status === 3) {
+            for (const billInfo of bill.billInfos) {
+                const food = await Food.findById(billInfo.food)
+                food.buys -= billInfo.quantity
+                await food.save()
+            }
+        }
         return res.status(200).json({
             status: true,
             message: 'update Bills success!',
