@@ -8,8 +8,7 @@ const {
     schemas,
 } = require('../helpers/routerHelpers')
 
-const passport = require('passport')
-const passportConfig = require('../middlewares/passport')
+const middlewareControllers = require('../middlewares/auth')
 
 router
     .route('/')
@@ -19,31 +18,28 @@ router
     .route('/login')
     .post(validateBody(schemas.loginSchema), userController.loginUser)
 router
-    .route('/secret')
-    .get(
-        passport.authenticate('jwt', { session: false }),
-        userController.secret
-    )
+    .route('/singup')
+    .post(validateBody(schemas.userSchema), userController.newUser)
 router
-    .route('/:userId')
-    .get(validateParam(schemas.idSchema, 'userId'), userController.getUser)
+    .route('/secret')
+    .get(middlewareControllers.verifyToken, userController.secret)
+router
+    .route('/info')
+    .get(middlewareControllers.verifyToken, userController.getUser)
     .put(
-        validateParam(schemas.idSchema, 'userId'),
+        middlewareControllers.verifyToken,
         validateBody(schemas.userSchema),
         userController.updateUser
     )
 router
-    .route('/:userId/cart')
-    .get(validateParam(schemas.idSchema, 'userId'), userController.getAllCart)
+    .route('/cart')
+    .get(middlewareControllers.verifyToken, userController.getAllCart)
 
 router
-    .route('/:userId/address')
-    .get(
-        validateParam(schemas.idSchema, 'userId'),
-        userController.getAllAddress
-    )
+    .route('/address')
+    .get(middlewareControllers.verifyToken, userController.getAllAddress)
 router
-    .route('/:userId/bills')
-    .get(validateParam(schemas.idSchema, 'userId'), userController.getAllBills)
+    .route('/bills')
+    .get(middlewareControllers.verifyToken, userController.getAllBills)
 
 module.exports = router

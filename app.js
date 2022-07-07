@@ -1,22 +1,12 @@
 const bodyParser = require('body-parser')
 const express = require('express')
 const logger = require('morgan')
-const mongoClient = require('mongoose')
 const dotenv = require('dotenv')
 dotenv.config()
 
-const router = express.Router()
-const connectString = process.env.CONNECT_STRING
+const database = require('./config/database')
 
-mongoClient
-    .connect(connectString, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .then(() => console.log('Database connected!'))
-    .catch((err) =>
-        console.error('Connect Database from MongoDB failed !' + err)
-    )
+database.connect()
 
 const app = express()
 

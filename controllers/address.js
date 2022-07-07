@@ -5,16 +5,9 @@ const User = require('../models/User')
 const newAddress = async (req, res, next) => {
     // console.log(req.body)
     try {
-        const userId = req.value.body.user
-        const user = await User.findById(userId)
-        if (user === null) {
-            return res.status(404).json({
-                status: false,
-                message: 'user is not exits',
-                data: [],
-            })
-        }
+        const user = req.user
         const newAddress = new Address(req.value.body)
+        newAddress.user = user._id
         await newAddress.save()
         user.address.push(newAddress._id)
         await user.save()
@@ -31,6 +24,12 @@ const newAddress = async (req, res, next) => {
 //READ
 const getAllAddress = async (req, res, next) => {
     try {
+        const user = req.user
+        if (user.role !== 0) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const address = await Address.find({ status: { $gte: 1 } })
         return res.status(200).json({
             status: true,
@@ -43,6 +42,7 @@ const getAllAddress = async (req, res, next) => {
 }
 const getAddress = async (req, res, next) => {
     try {
+        const user = req.user
         const { addressId } = req.value.params
         const address = await Address.findById(addressId)
         if (address === null) {
@@ -52,6 +52,11 @@ const getAddress = async (req, res, next) => {
         }
         if (address.status === 0) {
             const err = new Error('address was deleted')
+            err.status = 500
+            throw err
+        }
+        if (address.user.toString() != user._id.toString()) {
+            const err = new Error("you don't have this address")
             err.status = 500
             throw err
         }
@@ -67,9 +72,10 @@ const getAddress = async (req, res, next) => {
 //UPDATE
 const updateAddress = async (req, res, next) => {
     try {
+        const user = req.user
         const { addressId } = req.value.params
         const newAddress = req.value.body
-        const address = await Address.findByIdAndUpdate(addressId, newAddress)
+        const address = await Address.findById(addressId)
         if (address === null) {
             const err = new Error('address is not exits')
             err.status = 404
@@ -80,6 +86,14 @@ const updateAddress = async (req, res, next) => {
             err.status = 500
             throw err
         }
+        if (address.user.toString() != user._id.toString()) {
+            const err = new Error(
+                "you don't have access to change this address"
+            )
+            err.status = 500
+            throw err
+        }
+        await address.updateOne(newAddress)
         return res.status(200).json({
             status: true,
             message: 'update addresss success!',
@@ -92,6 +106,7 @@ const updateAddress = async (req, res, next) => {
 //DELETE
 const deleteAddress = async (req, res, next) => {
     try {
+        const user = req.user
         const { addressId } = req.value.params
         const address = await Address.findById(addressId)
         if (address === null) {
@@ -104,13 +119,14 @@ const deleteAddress = async (req, res, next) => {
             err.status = 500
             throw err
         }
-        address.status = 0
-        const user = await User.findById(address.user)
-        if (user === null) {
-            const err = new Error('address owner is wrong!')
-            err.status = 404
+        if (address.user.toString() != user._id.toString()) {
+            const err = new Error(
+                "you don't have access to delete this address"
+            )
+            err.status = 500
             throw err
         }
+        address.status = 0
         await address.save()
         user.address.pull(address)
         await user.save()

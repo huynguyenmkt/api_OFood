@@ -16,7 +16,7 @@ passport.use(
                 if (!user) {
                     const err = new Error('User is not exits')
                     err.status = 404
-                    return done(err, null, false)
+                    return done(err, false)
                     // return done(null, false)
                 }
                 done(null, user)

@@ -67,11 +67,11 @@ const loginUser = async (req, res, next) => {
 
         user.password = undefined
         const token = encodedToken(user._id)
-        res.setHeader('Authorization', token)
         return res.status(200).json({
             status: true,
             message: 'login success!',
             data: user,
+            accessToken: token,
         })
     } catch (error) {
         next(error)
@@ -98,26 +98,20 @@ const getAllUser = async (req, res, next) => {
 }
 const getUser = async (req, res, next) => {
     try {
-        const { userId } = req.value.params
-        const user = await User.findById(userId)
-        if (user === null)
-            return res.status(404).json({
-                status: false,
-                message: 'user not found!',
-                data: [],
-            })
+        const user = req.user
+        const { password, role, ...filterUser } = user._doc
         return res.status(200).json({
             status: true,
             message: 'get users success!',
-            data: user,
+            data: filterUser,
         })
     } catch (error) {
-        next(new Error('Not found userID'))
+        next(error)
     }
 }
 const getAllCart = async (req, res, next) => {
     try {
-        const { userId } = req.value.params
+        const userId = req.user._id
         const user = await User.findById(userId).populate('cart')
         if (user === null)
             return res.status(404).json({
@@ -136,7 +130,7 @@ const getAllCart = async (req, res, next) => {
 }
 const getAllAddress = async (req, res, next) => {
     try {
-        const { userId } = req.value.params
+        const userId = req.user._id
         const user = await User.findById(userId).populate(
             'address',
             '-user -status'
@@ -158,7 +152,7 @@ const getAllAddress = async (req, res, next) => {
 }
 const getAllBills = async (req, res, next) => {
     try {
-        const { userId } = req.value.params
+        const userId = req.user._id
         const user = await User.findById(userId).populate({
             path: 'bills',
             populate: { path: 'billInfos' },
@@ -181,7 +175,8 @@ const getAllBills = async (req, res, next) => {
 //UPDATE
 const updateUser = async (req, res, next) => {
     try {
-        const { userId } = req.value.params
+        const userId = req.user._id
+        console.log(userId)
         const newUser = req.value.body
         const user = await User.findByIdAndUpdate(userId, newUser)
         if (user === null) {

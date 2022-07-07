@@ -88,9 +88,6 @@ const schemas = {
         city: Joi.string().required(),
         country: Joi.string().required(),
         status: Joi.number(),
-        user: Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required(),
     }),
     billSchema: Joi.object({
         status: Joi.number(),
