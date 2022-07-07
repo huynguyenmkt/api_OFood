@@ -77,9 +77,10 @@ const schemas = {
         food: Joi.string()
             .regex(/^[0-9a-fA-F]{24}$/)
             .required(),
-        user: Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required(),
+    }),
+    cartUpdateSchema: Joi.object({
+        quantity: Joi.number().required(),
+        food: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
     }),
     addressSchema: Joi.object({
         houseNumber: Joi.string(),
