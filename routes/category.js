@@ -7,11 +7,16 @@ const {
     validateParam,
     schemas,
 } = require('../helpers/routerHelpers')
+const middlewareControllers = require('../middlewares/auth')
 
 router
     .route('/')
     .get(categoryController.getAllCategory)
-    .post(validateBody(schemas.categorySchema), categoryController.newCategory)
+    .post(
+        middlewareControllers.verifyToken,
+        validateBody(schemas.categorySchema),
+        categoryController.newCategory
+    )
 
 router
     .route('/:categoryId')
@@ -21,11 +26,13 @@ router
     )
     .put(
         validateParam(schemas.idSchema, 'categoryId'),
+        middlewareControllers.verifyToken,
         validateBody(schemas.categorySchema),
         categoryController.updateCategory
     )
     .delete(
         validateParam(schemas.idSchema, 'categoryId'),
+        middlewareControllers.verifyToken,
         categoryController.deleteCategory
     )
 
@@ -37,6 +44,7 @@ router
     )
     .post(
         validateParam(schemas.idSchema, 'categoryId'),
+        middlewareControllers.verifyToken,
         validateBody(schemas.foodSchema),
         categoryController.newFood
     )

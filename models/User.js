@@ -30,7 +30,7 @@ const UserSchema = new Schema(
         },
         role: {
             type: Number,
-            default: 1,
+            default: 2,
         },
         image: {
             type: String,

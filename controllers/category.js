@@ -4,6 +4,12 @@ const Food = require('../models/Food')
 const newCategory = async (req, res, next) => {
     // console.log(req.body)
     try {
+        const user = req.user
+        if (user.role >= 2) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const newCategory = new Category(req.value.body)
         await newCategory.save()
         return res.status(201).json({
@@ -27,8 +33,21 @@ const newCategory = async (req, res, next) => {
 
 const newFood = async (req, res, next) => {
     try {
+        const user = req.user
+        if (user.role >= 2) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const { categoryId } = req.value.params
         const category = await Category.findById(categoryId)
+        if (category === null) {
+            return res.status(404).json({
+                status: false,
+                message: 'Category not found!',
+                data: [],
+            })
+        }
         const newFood = new Food(req.value.body)
         newFood.category = category._id
         await newFood.save()
@@ -104,12 +123,23 @@ const getAllFood = async (req, res, next) => {
 //UPDATE
 const updateCategory = async (req, res, next) => {
     try {
+        const user = req.user
+        if (user.role >= 2) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const { categoryId } = req.value.params
         const newCategory = req.value.body
         const category = await Category.findByIdAndUpdate(
             categoryId,
             newCategory
         )
+        if (category === null) {
+            const err = new Error('category is not exits')
+            err.status = 404
+            throw err
+        }
         return res.status(200).json({
             status: true,
             message: 'update Categorys success!',
@@ -131,6 +161,12 @@ const updateCategory = async (req, res, next) => {
 //DELETE
 const deleteCategory = async (req, res, next) => {
     try {
+        const user = req.user
+        if (user.role >= 2) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const { categoryId } = req.value.params
 
         const category = await Category.findByIdAndDelete(categoryId)
