@@ -91,12 +91,14 @@ const schemas = {
     }),
     billSchema: Joi.object({
         status: Joi.number(),
-        user: Joi.string()
-            .regex(/^[0-9a-fA-F]{24}$/)
-            .required(),
         address: Joi.string()
             .regex(/^[0-9a-fA-F]{24}$/)
             .required(),
+    }),
+    billUpdateSchema: Joi.object({
+        status: Joi.number(),
+        user: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
+        address: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
     }),
     reviewSchema: Joi.object({
         rate: Joi.number().required(),

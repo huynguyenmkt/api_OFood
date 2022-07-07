@@ -12,7 +12,7 @@ const middlewareControllers = require('../middlewares/auth')
 
 router
     .route('/')
-    .get(userController.getAllUser)
+    .get(middlewareControllers.verifyToken, userController.getAllUser)
     .post(validateBody(schemas.userSchema), userController.newUser)
 router
     .route('/login')

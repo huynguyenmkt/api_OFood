@@ -86,6 +86,12 @@ const secret = async (req, res, next) => {
 }
 const getAllUser = async (req, res, next) => {
     try {
+        const user = req.user
+        if (user.role !== 0) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const users = await User.find({})
         return res.status(200).json({
             status: true,

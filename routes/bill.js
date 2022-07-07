@@ -7,18 +7,28 @@ const {
     validateParam,
     schemas,
 } = require('../helpers/routerHelpers')
+const middlewareControllers = require('../middlewares/auth')
 
 router
     .route('/')
-    .get(billController.getAllBill)
-    .post(validateBody(schemas.billSchema), billController.newBill)
+    .get(middlewareControllers.verifyToken, billController.getAllBill)
+    .post(
+        middlewareControllers.verifyToken,
+        validateBody(schemas.billSchema),
+        billController.newBill
+    )
 
 router
     .route('/:billId')
-    .get(validateParam(schemas.idSchema, 'billId'), billController.getBill)
+    .get(
+        validateParam(schemas.idSchema, 'billId'),
+        middlewareControllers.verifyToken,
+        billController.getBill
+    )
     .put(
         validateParam(schemas.idSchema, 'billId'),
-        validateBody(schemas.billSchema),
+        middlewareControllers.verifyToken,
+        validateBody(schemas.billUpdateSchema),
         billController.updateBill
     )
 module.exports = router

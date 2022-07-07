@@ -8,7 +8,7 @@ const User = require('../models/User')
 const newBill = async (req, res, next) => {
     // console.log(req.body)
     try {
-        const userId = req.value.body.user
+        const userId = req.user._id
         const addressId = req.value.body.address
         //get user and address
         const user = await User.findById(userId).populate('cart')
@@ -24,13 +24,18 @@ const newBill = async (req, res, next) => {
             err.status = 404
             throw err
         }
+        if (address.user.toString() != user._id.toString()) {
+            const err = new Error("you don't have this address")
+            err.status = 400
+            throw err
+        }
         if (user.cart.length <= 0) {
             const err = new Error('cart is empty!')
             err.status = 500
             throw err
         }
         const newBill = new Bill(req.value.body)
-
+        newBill.user = user._id
         for (const item of user.cart) {
             const food = await Food.findById(item.food)
             const priceOrder = food.price * (food.sale / 100)
@@ -47,6 +52,7 @@ const newBill = async (req, res, next) => {
         await newBill.save()
         user.bills.push(newBill._id)
         user.cart = []
+        await Cart.deleteMany({ user: user._id })
         await user.save()
         return res.status(201).json({
             status: true,
@@ -61,6 +67,12 @@ const newBill = async (req, res, next) => {
 //READ
 const getAllBill = async (req, res, next) => {
     try {
+        const user = req.user
+        if (user.role !== 0) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const bills = await Bill.find({}).populate('billInfos')
         return res.status(200).json({
             status: true,
@@ -73,14 +85,20 @@ const getAllBill = async (req, res, next) => {
 }
 const getBill = async (req, res, next) => {
     try {
+        const user = req.user
         const { billId } = req.value.params
         const bill = await Bill.findById(billId).populate('billInfos')
+
         if (bill === null) {
             const err = new Error('bill is not exits')
             err.status = 404
             throw err
         }
-
+        if (bill.user.toString() != user._id.toString()) {
+            const err = new Error("you don't have this bill")
+            err.status = 400
+            throw err
+        }
         return res.status(200).json({
             status: true,
             message: 'get Bills success!',
@@ -93,31 +111,22 @@ const getBill = async (req, res, next) => {
 //UPDATE
 const updateBill = async (req, res, next) => {
     try {
+        const userAdmin = req.user
+        if (userAdmin.role !== 0) {
+            const err = new Error("you don't have access to this service")
+            err.status = 400
+            throw err
+        }
         const { billId } = req.value.params
         const newBill = req.value.body
-        const userId = req.value.body.user
-        const addressId = req.value.body.address
-        //get user and address
-        const user = await User.findById(userId).populate('cart')
-        const address = await Address.findById(addressId)
 
-        const bill = await Bill.findById(billId)
+        const bill = await Bill.findByIdAndUpdate(billId, newBill)
         if (bill === null) {
-            const err = new Error('Bill is not exits')
+            const err = new Error('bill is not exits')
             err.status = 404
             throw err
         }
-        if (user === null) {
-            const err = new Error('user is not exits')
-            err.status = 404
-            throw err
-        }
-        if (address === null) {
-            const err = new Error('address is not exits')
-            err.status = 404
-            throw err
-        }
-        await bill.updateOne(newBill)
+
         return res.status(200).json({
             status: true,
             message: 'update Bills success!',
