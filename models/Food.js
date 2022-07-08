@@ -15,11 +15,16 @@ const FoodSchema = new Schema(
         },
         sale: {
             type: Number,
+            default: 0,
         },
         image: {
             type: String,
         },
         buys: {
+            type: Number,
+            default: 0,
+        },
+        quantity: {
             type: Number,
             default: 0,
         },

@@ -1,7 +1,7 @@
 const Cart = require('../models/Cart')
 const Food = require('../models/Food')
 const User = require('../models/User')
-
+const cartService = require('../services/cart')
 //CREATE
 const newCart = async (req, res, next) => {
     // console.log(req.body)
@@ -9,28 +9,14 @@ const newCart = async (req, res, next) => {
         const user = req.user
 
         const foodId = req.value.body.food
-        const food = await Food.findById(foodId)
+        const newCart = req.value.body
 
-        if (food === null) {
-            return res.status(404).json({
-                status: false,
-                message: 'food is not exits',
-                data: [],
-            })
-        }
-
-        const newCart = new Cart(req.value.body)
-        // newCart.food = food._id
-        newCart.user = user._id
-        await newCart.save()
-
-        user.cart.push(newCart._id)
-        await user.save()
+        const cart = await cartService.newCart(foodId, newCart, user)
 
         return res.status(201).json({
             status: true,
             message: 'create Cart success!',
-            data: newCart,
+            data: cart,
         })
     } catch (error) {
         next(error)
@@ -46,7 +32,7 @@ const getAllCart = async (req, res, next) => {
             err.status = 400
             throw err
         }
-        const carts = await Cart.find({}).populate('food').populate('user')
+        const carts = await cartService.getAllCart()
         return res.status(200).json({
             status: true,
             message: 'get all carts success!',
@@ -60,19 +46,7 @@ const getCart = async (req, res, next) => {
     try {
         const user = req.user
         const { cartId } = req.value.params
-        const cart = await Cart.findById(cartId).populate('food')
-        // .populate('user')
-        if (cart === null)
-            return res.status(404).json({
-                status: false,
-                message: 'Cart not found!',
-                data: [],
-            })
-        if (cart.user.toString() != user._id.toString()) {
-            const err = new Error("you don't have this cart")
-            err.status = 400
-            throw err
-        }
+        const cart = await cartService.getCart(cartId, user)
         return res.status(200).json({
             status: true,
             message: 'get cart success!',
@@ -89,27 +63,8 @@ const updateCart = async (req, res, next) => {
         const { cartId } = req.value.params
 
         const newCart = req.value.body
-        const cart = await Cart.findById(cartId)
 
-        if (cart === null) {
-            return res.status(404).json({
-                status: false,
-                message: 'CartID is not exits',
-                data: [],
-            })
-        }
-        if (cart.user.toString() != user._id.toString()) {
-            const err = new Error("you don't have this cart")
-            err.status = 400
-            throw err
-        }
-        if (newCart.quantity <= 0) {
-            await cart.deleteOne()
-            user.cart.pull(cart)
-            await user.save()
-        } else {
-            await cart.updateOne(newCart)
-        }
+        const cart = await cartService.updateCart(cartId, newCart, user)
         return res.status(200).json({
             status: true,
             message: 'update Carts success!',

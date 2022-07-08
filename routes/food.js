@@ -34,8 +34,5 @@ router
         middlewareControllers.verifyToken,
         foodController.deleteFood
     )
-router
-    .route('/:foodId/increaseBuys')
-    .post(validateParam(schemas.idSchema, 'foodId'), foodController.incBuysFood)
 
 module.exports = router

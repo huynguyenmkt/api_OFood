@@ -1,8 +1,8 @@
 const Food = require('../models/Food')
 const Category = require('../models/Category')
+const foodService = require('../services/food')
 //CREATE
 const newFood = async (req, res, next) => {
-    // console.log(req.body)
     try {
         const user = req.user
         if (user.role >= 2) {
@@ -10,28 +10,12 @@ const newFood = async (req, res, next) => {
             err.status = 400
             throw err
         }
-        const newFood = new Food(req.value.body)
-        const categoryId = newFood.category
-        if (categoryId) {
-            // console.log(categoryId)
-            const category = await Category.findById(categoryId)
-            if (category === null) {
-                return res.status(404).json({
-                    status: false,
-                    message: 'category is not exits',
-                    data: [],
-                })
-            }
-            await newFood.save()
-            category.foods.push(newFood)
-            await category.save()
-        } else {
-            await newFood.save()
-        }
+        const newFood = req.value.body
+        const food = await foodService.newFood(newFood)
         return res.status(201).json({
             status: true,
             message: 'create food success!',
-            data: newFood,
+            data: food,
         })
     } catch (error) {
         next(error)
@@ -41,7 +25,7 @@ const newFood = async (req, res, next) => {
 //READ
 const getAllFood = async (req, res, next) => {
     try {
-        const foods = await Food.find({ status: { $gte: 1 } })
+        const foods = await foodService.getAllFood()
         return res.status(200).json({
             status: true,
             message: 'get all foods success!',
@@ -53,9 +37,7 @@ const getAllFood = async (req, res, next) => {
 }
 const getTopFood = async (req, res, next) => {
     try {
-        const foods = await Food.find({ status: { $gte: 1 } })
-            .sort({ buys: -1 })
-            .limit(10)
+        const foods = await foodService.getTopFood()
         return res.status(200).json({
             status: true,
             message: 'get top foods success!',
@@ -68,14 +50,7 @@ const getTopFood = async (req, res, next) => {
 const getFood = async (req, res, next) => {
     try {
         const { foodId } = req.value.params
-        const food = await Food.findById(foodId)
-
-        if (food === null)
-            return res.status(404).json({
-                status: false,
-                message: 'food not found!',
-                data: [],
-            })
+        const food = await foodService.getFood(foodId)
 
         return res.status(200).json({
             status: true,
@@ -83,7 +58,7 @@ const getFood = async (req, res, next) => {
             data: food,
         })
     } catch (error) {
-        next(new Error('Not found foodID'))
+        next(error)
     }
 }
 // UPDATE
@@ -97,21 +72,7 @@ const updateFood = async (req, res, next) => {
         }
         const { foodId } = req.value.params
         const newFood = req.value.body
-        const categoryId = req.value.body.category
-        if (categoryId) {
-            const category = await Category.findById(categoryId)
-            if (category === null) {
-                const err = new Error('category is not exits')
-                err.status = 404
-                throw err
-            }
-        }
-        const food = await Food.findByIdAndUpdate(foodId, newFood)
-        if (food === null) {
-            const err = new Error('food is not exits')
-            err.status = 404
-            throw err
-        }
+        await foodService.updateFood(foodId, newFood)
         return res.status(200).json({
             status: true,
             message: 'update foods success!',
@@ -121,37 +82,7 @@ const updateFood = async (req, res, next) => {
         next(error)
     }
 }
-const incBuysFood = async (req, res, next) => {
-    try {
-        const { foodId } = req.value.params
-        const newFood = await Food.findById(foodId)
 
-        if (newFood.status === 0) {
-            return res.status(400).json({
-                status: false,
-                message: 'food was deleted!',
-                data: [],
-            })
-        }
-
-        if (newFood === null)
-            return res.status(404).json({
-                status: false,
-                message: 'food not found!',
-                data: [],
-            })
-
-        newFood.buys += 1
-        await newFood.save()
-        return res.status(200).json({
-            status: true,
-            message: 'increase buys foods success!',
-            data: [],
-        })
-    } catch (error) {
-        next(error)
-    }
-}
 //DELETE
 const deleteFood = async (req, res, next) => {
     try {
@@ -162,21 +93,11 @@ const deleteFood = async (req, res, next) => {
             throw err
         }
         const { foodId } = req.value.params
-        const newFood = await Food.findById(foodId)
-
-        if (newFood === null)
-            return res.status(404).json({
-                status: false,
-                message: 'food not found!',
-                data: [],
-            })
-
-        newFood.status = 0
-        await newFood.save()
+        await foodService.deleteFood(foodId)
 
         return res.status(200).json({
             status: true,
-            message: 'delete food success!',
+            message: 'sold out!',
             data: [],
         })
     } catch (error) {
@@ -187,8 +108,7 @@ module.exports = {
     newFood,
     getAllFood,
     getFood,
+    getTopFood,
     updateFood,
     deleteFood,
-    getTopFood,
-    incBuysFood,
 }

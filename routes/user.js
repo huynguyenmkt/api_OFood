@@ -28,7 +28,7 @@ router
     .get(middlewareControllers.verifyToken, userController.getUser)
     .put(
         middlewareControllers.verifyToken,
-        validateBody(schemas.userSchema),
+        validateBody(schemas.userUpdateSchema),
         userController.updateUser
     )
 router

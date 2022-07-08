@@ -1,41 +1,17 @@
-const User = require('../models/User')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
-
-const secretString = process.env.JWT_SECRET
-
-const encodedToken = (userId) => {
-    return jwt.sign(
-        {
-            sub: userId,
-        },
-        secretString,
-        {
-            expiresIn: '10d',
-        }
-    )
-}
+const userService = require('../services/user')
 //CREATE
 const newUser = async (req, res, next) => {
-    // console.log(req.body)
     try {
-        const salt = await bcrypt.genSalt(10)
-        const hashed = await bcrypt.hash(req.value.body.password, salt)
-
-        const newUser = new User(req.value.body)
-        newUser.password = hashed
-        await newUser.save()
-        newUser.password = undefined
-        const token = encodedToken(newUser._id)
-        res.setHeader('Authorization', token)
+        const newUser = req.value.body
+        const result = await userService.newUser(newUser)
         return res.status(201).json({
             status: true,
             message: 'create user success!',
-            data: newUser,
+            data: result.newUser,
+            accessToken: result.token,
         })
     } catch (error) {
         if (error.keyValue) {
-            // console.log('POST' + JSON.stringify(error[Object.keys(error)[3]]))
             const msg =
                 JSON.stringify(error[Object.keys(error)[3]]) +
                 ' is already being used!'
@@ -52,26 +28,12 @@ const loginUser = async (req, res, next) => {
     try {
         const userName = req.value.body.userName
         const password = req.value.body.password
-        const user = await User.findOne({ userName: userName })
-        if (user === null) {
-            const err = new Error('user name or password is wrong')
-            err.status = 404
-            throw err
-        }
-        const validPassword = await bcrypt.compare(password, user.password)
-        if (!validPassword) {
-            const err = new Error('user name or password is wrong')
-            err.status = 404
-            throw err
-        }
-
-        user.password = undefined
-        const token = encodedToken(user._id)
+        const result = await userService.loginUser(userName, password)
         return res.status(200).json({
             status: true,
             message: 'login success!',
-            data: user,
-            accessToken: token,
+            data: result.user,
+            accessToken: result.token,
         })
     } catch (error) {
         next(error)
@@ -92,7 +54,7 @@ const getAllUser = async (req, res, next) => {
             err.status = 400
             throw err
         }
-        const users = await User.find({})
+        const users = await userService.getAllUser()
         return res.status(200).json({
             status: true,
             message: 'get all users success!',
@@ -105,7 +67,7 @@ const getAllUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
     try {
         const user = req.user
-        const { password, role, ...filterUser } = user._doc
+        const filterUser = await userService.getUser(user)
         return res.status(200).json({
             status: true,
             message: 'get users success!',
@@ -118,17 +80,11 @@ const getUser = async (req, res, next) => {
 const getAllCart = async (req, res, next) => {
     try {
         const userId = req.user._id
-        const user = await User.findById(userId).populate('cart')
-        if (user === null)
-            return res.status(404).json({
-                status: false,
-                message: 'user not found!',
-                data: [],
-            })
+        const carts = await userService.getAllCart(userId)
         return res.status(200).json({
             status: true,
             message: 'get carts success!',
-            data: user.cart,
+            data: carts,
         })
     } catch (error) {
         next(error)
@@ -137,20 +93,11 @@ const getAllCart = async (req, res, next) => {
 const getAllAddress = async (req, res, next) => {
     try {
         const userId = req.user._id
-        const user = await User.findById(userId).populate(
-            'address',
-            '-user -status'
-        )
-        if (user === null)
-            return res.status(404).json({
-                status: false,
-                message: 'user not found!',
-                data: [],
-            })
+        const address = await userService.getAllAddress(userId)
         return res.status(200).json({
             status: true,
             message: 'get address success!',
-            data: user.address,
+            data: address,
         })
     } catch (error) {
         next(error)
@@ -159,20 +106,11 @@ const getAllAddress = async (req, res, next) => {
 const getAllBills = async (req, res, next) => {
     try {
         const userId = req.user._id
-        const user = await User.findById(userId).populate({
-            path: 'bills',
-            populate: { path: 'billInfos' },
-        })
-        if (user === null)
-            return res.status(404).json({
-                status: false,
-                message: 'user not found!',
-                data: [],
-            })
+        const bills = await userService.getAllBills(userId)
         return res.status(200).json({
             status: true,
             message: 'get bills success!',
-            data: user.bills,
+            data: bills,
         })
     } catch (error) {
         next(error)
@@ -182,23 +120,16 @@ const getAllBills = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
     try {
         const userId = req.user._id
-        console.log(userId)
         const newUser = req.value.body
-        const user = await User.findByIdAndUpdate(userId, newUser)
-        if (user === null) {
-            const err = new Error('user is not exits')
-            err.status = 404
-            throw err
-        }
+
+        await userService.updateUser(userId, newUser)
         return res.status(200).json({
             status: true,
             message: 'update users success!',
             data: [],
         })
     } catch (error) {
-        // console.log(error)
         if (error.codeName === 'DuplicateKey') {
-            // console.log(JSON.stringify(error[Object.keys(error)[4]]))
             const msg =
                 JSON.stringify(error[Object.keys(error)[4]]) +
                 ' is already being used!'

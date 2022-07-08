@@ -1,30 +1,16 @@
-const Bill = require('../models/Bill')
-const Food = require('../models/Food')
-const Review = require('../models/Review')
-const User = require('../models/User')
-
+const reviewService = require('../services/review')
 //CREATE
 const newReview = async (req, res, next) => {
-    // console.log(req.body)
     try {
         const user = req.user
         const foodId = req.value.body.food
+        const newReview = req.value.body
+        const review = await reviewService.newReview(foodId, newReview, user)
 
-        const food = await Food.findById(foodId)
-        if (food === null) {
-            const err = new Error('food is not exits')
-            err.status = 404
-            throw err
-        }
-        const newReview = new Review(req.value.body)
-        newReview.user = user._id
-        await newReview.save()
-        food.reviews.push(newReview._id)
-        await food.save()
         return res.status(201).json({
             status: true,
             message: 'create Review success!',
-            data: newReview,
+            data: review,
         })
     } catch (error) {
         next(error)
@@ -34,7 +20,7 @@ const newReview = async (req, res, next) => {
 //READ
 const getAllReview = async (req, res, next) => {
     try {
-        const reviews = await Review.find({})
+        const reviews = await reviewService.getAllReview()
         return res.status(200).json({
             status: true,
             message: 'get all reviews success!',
@@ -47,12 +33,7 @@ const getAllReview = async (req, res, next) => {
 const getReview = async (req, res, next) => {
     try {
         const { reviewId } = req.value.params
-        const review = await Review.findById(reviewId)
-        if (review === null) {
-            const err = new Error('review is not exits')
-            err.status = 404
-            throw err
-        }
+        const review = await reviewService.getReview(reviewId)
         return res.status(200).json({
             status: true,
             message: 'get Reviews success!',
@@ -70,18 +51,7 @@ const updateReview = async (req, res, next) => {
         const { reviewId } = req.value.params
 
         const newReview = req.value.body
-        const review = await Review.findById(reviewId)
-        if (review === null) {
-            const err = new Error('review is not exits')
-            err.status = 404
-            throw err
-        }
-        if (review.user.toString() != user._id.toString()) {
-            const err = new Error('you are not review owner')
-            err.status = 400
-            throw err
-        }
-        await review.updateOne(newReview)
+        await reviewService.updateReview(reviewId, newReview, user)
         return res.status(200).json({
             status: true,
             message: 'update Reviews success!',
@@ -96,24 +66,7 @@ const deleteReview = async (req, res, next) => {
     try {
         const user = req.user
         const { reviewId } = req.value.params
-        const review = await Review.findById(reviewId)
-        if (review === null) {
-            const err = new Error('review is not exits')
-            err.status = 404
-            throw err
-        }
-        if (review.user.toString() != user._id.toString()) {
-            const err = new Error('you are not review owner')
-            err.status = 400
-            throw err
-        }
-        await review.deleteOne()
-        await Food.updateMany(
-            { reviews: reviewId },
-            {
-                $pull: { reviews: reviewId },
-            }
-        )
+        await reviewService.deleteReview(reviewId, user)
         return res.status(200).json({
             status: true,
             message: 'delete review success!',
