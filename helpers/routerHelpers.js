@@ -54,7 +54,6 @@ const schemas = {
         password: Joi.string().required(),
         image: Joi.string(),
         birthday: Joi.string(),
-        role: Joi.number(),
     }),
     userUpdateSchema: Joi.object({
         name: Joi.string().min(2).required(),
@@ -64,7 +63,9 @@ const schemas = {
         password: Joi.string(),
         image: Joi.string(),
         birthday: Joi.string(),
-        role: Joi.number(),
+    }),
+    userUpdateRoleSchema: Joi.object({
+        role: Joi.number().required().min(0).max(3),
     }),
     loginSchema: Joi.object({
         userName: Joi.string().required(),

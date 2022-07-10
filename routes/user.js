@@ -12,7 +12,7 @@ const middlewareControllers = require('../middlewares/auth')
 
 router
     .route('/')
-    .get(middlewareControllers.verifyToken, userController.getAllUser)
+    .get(middlewareControllers.verifyAdminToken, userController.getAllUser)
     .post(validateBody(schemas.userSchema), userController.newUser)
 router
     .route('/login')
@@ -41,5 +41,8 @@ router
 router
     .route('/bills')
     .get(middlewareControllers.verifyToken, userController.getAllBills)
+router
+    .route('/:userId/updateRole')
+    .put(validateParam(schemas.idSchema, 'userId'), middlewareControllers.verifyAdminToken, validateBody(schemas.userUpdateRoleSchema), userController.updateRoleUser)
 
 module.exports = router

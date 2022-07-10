@@ -3,11 +3,6 @@ const categoryService = require('../services/category')
 const newCategory = async (req, res, next) => {
     try {
         const user = req.user
-        if (user.role >= 2) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
         const newCategory = req.value.body
         const category = await categoryService.newCategory(newCategory)
         return res.status(201).json({
@@ -31,11 +26,6 @@ const newCategory = async (req, res, next) => {
 const newFood = async (req, res, next) => {
     try {
         const user = req.user
-        if (user.role >= 2) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
         const { categoryId } = req.value.params
         const newFood = req.value.body
 
@@ -96,11 +86,6 @@ const getAllFood = async (req, res, next) => {
 const updateCategory = async (req, res, next) => {
     try {
         const user = req.user
-        if (user.role >= 2) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
         const { categoryId } = req.value.params
         const newCategory = req.value.body
         await categoryService.updateCategory(categoryId, newCategory)
@@ -125,11 +110,6 @@ const updateCategory = async (req, res, next) => {
 const deleteCategory = async (req, res, next) => {
     try {
         const user = req.user
-        if (user.role >= 2) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
         const { categoryId } = req.value.params
 
         await categoryService.deleteCategory(categoryId)

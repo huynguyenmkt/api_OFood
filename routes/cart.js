@@ -11,7 +11,7 @@ const middlewareControllers = require('../middlewares/auth')
 
 router
     .route('/')
-    .get(middlewareControllers.verifyToken, cartController.getAllCart)
+    .get(middlewareControllers.verifyStaffToken, cartController.getAllCart)
     .post(
         middlewareControllers.verifyToken,
         validateBody(schemas.cartSchema),

@@ -1,15 +1,9 @@
-const Food = require('../models/Food')
-const Category = require('../models/Category')
+
 const foodService = require('../services/food')
 //CREATE
 const newFood = async (req, res, next) => {
     try {
         const user = req.user
-        if (user.role >= 2) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
         const newFood = req.value.body
         const food = await foodService.newFood(newFood)
         return res.status(201).json({
@@ -65,11 +59,6 @@ const getFood = async (req, res, next) => {
 const updateFood = async (req, res, next) => {
     try {
         const user = req.user
-        if (user.role >= 2) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
         const { foodId } = req.value.params
         const newFood = req.value.body
         await foodService.updateFood(foodId, newFood)
@@ -87,11 +76,6 @@ const updateFood = async (req, res, next) => {
 const deleteFood = async (req, res, next) => {
     try {
         const user = req.user
-        if (user.role >= 2) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
         const { foodId } = req.value.params
         await foodService.deleteFood(foodId)
 

@@ -49,11 +49,6 @@ const secret = async (req, res, next) => {
 const getAllUser = async (req, res, next) => {
     try {
         const user = req.user
-        if (user.role !== 0) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
         const users = await userService.getAllUser()
         return res.status(200).json({
             status: true,
@@ -140,6 +135,23 @@ const updateUser = async (req, res, next) => {
         }
     }
 }
+const updateRoleUser = async (req, res, next) => {
+    try {
+        const { userId } = req.value.params
+        const newUser = req.value.body
+
+        console.log(userId)
+
+        await userService.updateRoleUser(userId, newUser)
+        return res.status(200).json({
+            status: true,
+            message: 'update role success!',
+            data: [],
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 //DELETE
 
 module.exports = {
@@ -152,4 +164,5 @@ module.exports = {
     getAllAddress,
     getAllBills,
     updateUser,
+    updateRoleUser
 }

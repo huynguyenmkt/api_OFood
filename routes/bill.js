@@ -11,7 +11,7 @@ const middlewareControllers = require('../middlewares/auth')
 
 router
     .route('/')
-    .get(middlewareControllers.verifyToken, billController.getAllBill)
+    .get(middlewareControllers.verifyStaffToken, billController.getAllBill)
     .post(
         middlewareControllers.verifyToken,
         validateBody(schemas.billSchema),
@@ -27,7 +27,7 @@ router
     )
     .put(
         validateParam(schemas.idSchema, 'billId'),
-        middlewareControllers.verifyToken,
+        middlewareControllers.verifyStaffToken,
         validateBody(schemas.billUpdateSchema),
         billController.updateBill
     )

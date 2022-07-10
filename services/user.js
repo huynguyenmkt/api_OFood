@@ -48,6 +48,7 @@ const loginUser = async (userName, password) => {
         }
 
         user.password = undefined
+        user.role = undefined
         const token = encodedToken(user._id)
         return { user, token }
     } catch (error) {
@@ -114,6 +115,14 @@ const getAllBills = async (userId) => {
 const updateUser = async (userId, newUser) => {
     try {
         const user = await User.findByIdAndUpdate(userId, newUser)
+    } catch (error) {
+        throw error
+    }
+}
+
+const updateRoleUser = async (userId, newUser) => {
+    try {
+        const user = await User.findByIdAndUpdate(userId, newUser)
         if (user === null) {
             const err = new Error('user is not exits')
             err.status = 404
@@ -133,4 +142,5 @@ module.exports = {
     getAllAddress,
     getAllBills,
     updateUser,
+    updateRoleUser
 }

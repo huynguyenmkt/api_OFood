@@ -24,11 +24,7 @@ const newBill = async (req, res, next) => {
 const getAllBill = async (req, res, next) => {
     try {
         const user = req.user
-        if (user.role !== 0) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
+
         const bills = await billService.getAllBill()
         return res.status(200).json({
             status: true,
@@ -57,11 +53,6 @@ const getBill = async (req, res, next) => {
 const updateBill = async (req, res, next) => {
     try {
         const userAdmin = req.user
-        if (userAdmin.role >= 2) {
-            const err = new Error("you don't have access to this service")
-            err.status = 400
-            throw err
-        }
         const { billId } = req.value.params
         const newBill = req.value.body
 

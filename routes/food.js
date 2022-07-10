@@ -13,7 +13,7 @@ router
     .route('/')
     .get(foodController.getAllFood)
     .post(
-        middlewareControllers.verifyToken,
+        middlewareControllers.verifyStaffToken,
         validateBody(schemas.foodSchema),
         foodController.newFood
     )
@@ -26,12 +26,12 @@ router
     .put(
         validateParam(schemas.idSchema, 'foodId'),
         validateBody(schemas.foodUpdateSchema),
-        middlewareControllers.verifyToken,
+        middlewareControllers.verifyStaffToken,
         foodController.updateFood
     )
     .delete(
         validateParam(schemas.idSchema, 'foodId'),
-        middlewareControllers.verifyToken,
+        middlewareControllers.verifyStaffToken,
         foodController.deleteFood
     )
 

@@ -11,7 +11,7 @@ const middlewareControllers = require('../middlewares/auth')
 
 router
     .route('/')
-    .get(middlewareControllers.verifyToken, addressController.getAllAddress)
+    .get(middlewareControllers.verifyAdminToken, addressController.getAllAddress)
     .post(
         middlewareControllers.verifyToken,
         validateBody(schemas.addressSchema),

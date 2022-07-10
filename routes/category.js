@@ -13,7 +13,7 @@ router
     .route('/')
     .get(categoryController.getAllCategory)
     .post(
-        middlewareControllers.verifyToken,
+        middlewareControllers.verifyStaffToken,
         validateBody(schemas.categorySchema),
         categoryController.newCategory
     )
@@ -26,13 +26,13 @@ router
     )
     .put(
         validateParam(schemas.idSchema, 'categoryId'),
-        middlewareControllers.verifyToken,
+        middlewareControllers.verifyStaffToken,
         validateBody(schemas.categorySchema),
         categoryController.updateCategory
     )
     .delete(
         validateParam(schemas.idSchema, 'categoryId'),
-        middlewareControllers.verifyToken,
+        middlewareControllers.verifyStaffToken,
         categoryController.deleteCategory
     )
 
@@ -44,7 +44,7 @@ router
     )
     .post(
         validateParam(schemas.idSchema, 'categoryId'),
-        middlewareControllers.verifyToken,
+        middlewareControllers.verifyStaffToken,
         validateBody(schemas.foodSchema),
         categoryController.newFood
     )
