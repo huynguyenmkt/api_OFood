@@ -52,7 +52,7 @@ const schemas = {
         phone: Joi.string().required(),
         userName: Joi.string().required(),
         password: Joi.string().required(),
-        image: Joi.string(),
+        image: Joi.string().allow(''),
         birthday: Joi.string(),
     }),
     userUpdateSchema: Joi.object({
@@ -61,7 +61,7 @@ const schemas = {
         phone: Joi.string().required(),
         userName: Joi.string().required(),
         password: Joi.string(),
-        image: Joi.string(),
+        image: Joi.string().allow(''),
         birthday: Joi.string(),
     }),
     userUpdateRoleSchema: Joi.object({
@@ -77,7 +77,7 @@ const schemas = {
         price: Joi.number().required(),
         quantity: Joi.number().required(),
         sale: Joi.number(),
-        image: Joi.string(),
+        image: Joi.string().allow(''),
         status: Joi.number(),
         category: Joi.string().regex(/^[0-9a-fA-F]{24}$/),
     }),

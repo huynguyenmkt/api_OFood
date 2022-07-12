@@ -55,10 +55,11 @@ const middlewareControllers = {
                         refresh: true,
                     })
                 }
+                //magic number
                 if (user.role !== 0 && user.role !== 1) {
                     return res.status(404).json({
                         status: false,
-                        message: 'you don\'t have access to this service',
+                        message: "you don't have access to this service",
                         refresh: true,
                     })
                 }
@@ -96,7 +97,7 @@ const middlewareControllers = {
                 if (user.role != 0) {
                     return res.status(404).json({
                         status: false,
-                        message: 'you don\'t have access to this service',
+                        message: "you don't have access to this service",
                         refresh: true,
                     })
                 }

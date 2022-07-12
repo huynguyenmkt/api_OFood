@@ -25,6 +25,7 @@ const newUser = async (user) => {
         newUser.password = hashed
         await newUser.save()
         newUser.password = undefined
+        newUser.role = undefined
         const token = encodedToken(newUser._id)
         return { newUser, token }
     } catch (error) {
@@ -142,5 +143,5 @@ module.exports = {
     getAllAddress,
     getAllBills,
     updateUser,
-    updateRoleUser
+    updateRoleUser,
 }
