@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const role = require('../config/role')
 const User = require('../models/User')
 
 const secretString = process.env.JWT_SECRET
@@ -56,7 +57,7 @@ const middlewareControllers = {
                     })
                 }
                 //magic number
-                if (user.role !== 0 && user.role !== 1) {
+                if (user.role !== role.ADMIN && user.role !== role.STAFF) {
                     return res.status(404).json({
                         status: false,
                         message: "you don't have access to this service",
@@ -94,7 +95,7 @@ const middlewareControllers = {
                         refresh: true,
                     })
                 }
-                if (user.role != 0) {
+                if (user.role != role.ADMIN) {
                     return res.status(404).json({
                         status: false,
                         message: "you don't have access to this service",

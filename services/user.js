@@ -25,7 +25,6 @@ const newUser = async (user) => {
         newUser.password = hashed
         await newUser.save()
         newUser.password = undefined
-        newUser.role = undefined
         const token = encodedToken(newUser._id)
         return { newUser, token }
     } catch (error) {
@@ -49,7 +48,6 @@ const loginUser = async (userName, password) => {
         }
 
         user.password = undefined
-        user.role = undefined
         const token = encodedToken(user._id)
         return { user, token }
     } catch (error) {

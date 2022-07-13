@@ -1,4 +1,3 @@
-
 const foodService = require('../services/food')
 //CREATE
 const newFood = async (req, res, next) => {
@@ -12,7 +11,15 @@ const newFood = async (req, res, next) => {
             data: food,
         })
     } catch (error) {
-        next(error)
+        if (error.keyValue) {
+            const msg =
+                JSON.stringify(error[Object.keys(error)[3]]) +
+                ' is already being used!'
+            const err = new Error(msg)
+            next(err)
+        } else {
+            next(error)
+        }
     }
 }
 
@@ -68,7 +75,15 @@ const updateFood = async (req, res, next) => {
             data: [],
         })
     } catch (error) {
-        next(error)
+        if (error.codeName === 'DuplicateKey') {
+            const msg =
+                JSON.stringify(error[Object.keys(error)[4]]) +
+                ' is already being used!'
+            const err = new Error(msg)
+            next(err)
+        } else {
+            next(error)
+        }
     }
 }
 
