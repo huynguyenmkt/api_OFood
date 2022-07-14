@@ -27,6 +27,8 @@ const newFood = async (food) => {
 const getAllFood = async () => {
     try {
         const foods = await Food.find({ status: { $gte: 1 } })
+            .populate('category')
+            .populate('reviews')
         return foods
     } catch (error) {
         throw error

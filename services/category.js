@@ -91,18 +91,24 @@ const updateCategory = async (categoryId, newCategory) => {
 
 const deleteCategory = async (categoryId) => {
     try {
-        const category = await Category.findByIdAndDelete(categoryId)
+        const category = await Category.findById(categoryId)
 
         if (category === null) {
             const err = new Error('category is not exits')
             err.status = 404
             throw err
         }
-
+        if (category.foods.length > 0) {
+            const err = new Error(`category ${category.name} can't delete`)
+            err.status = 400
+            throw err
+        }
+        await category.deleteOne()
         const foods = await Food.updateMany(
             { category: categoryId },
             { category: null }
         )
+        return category
     } catch (error) {
         throw error
     }
