@@ -42,7 +42,12 @@ router
     .route('/bills')
     .get(middlewareControllers.verifyToken, userController.getAllBills)
 router
-    .route('/:userId/updateRole')
-    .put(validateParam(schemas.idSchema, 'userId'), middlewareControllers.verifyAdminToken, validateBody(schemas.userUpdateRoleSchema), userController.updateRoleUser)
+    .route('/:userId/updateRole/')
+    .put(
+        validateParam(schemas.idSchema, 'userId'),
+        middlewareControllers.verifyAdminToken,
+        validateBody(schemas.userUpdateRoleSchema),
+        userController.updateRoleUser
+    )
 
 module.exports = router

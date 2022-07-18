@@ -43,7 +43,7 @@ const secret = async (req, res, next) => {
     res.status(200).json({
         status: true,
         message: 'secret success',
-        data: req.user,
+        data: req.user.role,
     })
 }
 const getAllUser = async (req, res, next) => {
@@ -164,5 +164,5 @@ module.exports = {
     getAllAddress,
     getAllBills,
     updateUser,
-    updateRoleUser
+    updateRoleUser,
 }

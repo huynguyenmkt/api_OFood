@@ -48,7 +48,6 @@ const loginUser = async (userName, password) => {
         }
 
         user.password = undefined
-        user.role = undefined
         const token = encodedToken(user._id)
         return { user, token }
     } catch (error) {
@@ -58,7 +57,7 @@ const loginUser = async (userName, password) => {
 
 const getAllUser = async () => {
     try {
-        const users = await User.find({})
+        const users = await User.find({}).populate('address')
         return users
     } catch (error) {
         throw error
@@ -142,5 +141,5 @@ module.exports = {
     getAllAddress,
     getAllBills,
     updateUser,
-    updateRoleUser
+    updateRoleUser,
 }

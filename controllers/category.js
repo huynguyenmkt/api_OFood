@@ -112,11 +112,11 @@ const deleteCategory = async (req, res, next) => {
         const user = req.user
         const { categoryId } = req.value.params
 
-        await categoryService.deleteCategory(categoryId)
+        const category = await categoryService.deleteCategory(categoryId)
         return res.status(200).json({
             status: true,
             message: 'delete category success!',
-            data: [],
+            data: category,
         })
     } catch (error) {
         next(error)

@@ -2,6 +2,8 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const logger = require('morgan')
 const dotenv = require('dotenv')
+const cors = require('cors')
+
 dotenv.config()
 
 const database = require('./config/database')
@@ -24,6 +26,35 @@ const reviewRoute = require('./routes/review')
 app.use(logger('dev'))
 app.use(bodyParser.json())
 
+app.use(function (req, res, next) {
+    // Website you wish to allow to connect
+
+    res.setHeader('Access-Control-Allow-Origin', '*')
+
+    // Request methods you wish to allow
+
+    res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+    )
+
+    // Request headers you wish to allow
+
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-Requested-With,content-type,Authorization'
+    )
+
+    // Set to true if you need the website to include cookies in the requests sent
+
+    // to the API (e.g. in case you use sessions)
+
+    res.setHeader('Access-Control-Allow-Credentials', true)
+
+    // Pass to next layer of middleware
+
+    next()
+})
 //Routes
 app.use('/api/users', userRoute)
 app.use('/api/food', foodRoute)

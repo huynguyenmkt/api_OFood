@@ -36,12 +36,14 @@ const newBill = async (addressId, bill, userId) => {
             err.status = 400
             throw err
         }
-        const priceOrder = food.price - food.price * (food.sale / 100)
+        const priceOrder = food.price
+        const saleOrder = food.sale
         const newBillInfo = new BillInfo({
             bill: newBill._id,
             food: food._id,
             quantity: item.quantity,
             priceOrder,
+            saleOrder,
         })
         food.buys += item.quantity
         food.quantity -= item.quantity
@@ -64,7 +66,13 @@ const newBill = async (addressId, bill, userId) => {
 }
 
 const getAllBill = async () => {
-    const bills = await Bill.find({}).populate('billInfos')
+    const bills = await Bill.find({})
+        .populate({
+            path: 'billInfos',
+            populate: { path: 'food' },
+        })
+        .populate('user', '-password -bills -address')
+        .populate('address')
     return bills
 }
 
@@ -90,9 +98,7 @@ const getBill = async (billId, user) => {
 }
 
 const updateBill = async (billId, newBill) => {
-    const bill = await Bill.findByIdAndUpdate(billId, newBill).populate(
-        'billInfos'
-    )
+    const bill = await Bill.findById(billId).populate('billInfos')
     if (bill === null) {
         const err = new Error('bill is not exits')
         err.status = 404
@@ -103,6 +109,7 @@ const updateBill = async (billId, newBill) => {
         err.status = 400
         throw err
     }
+    await bill.updateOne(newBill)
     if (newBill.status === 3) {
         for (const billInfo of bill.billInfos) {
             const food = await Food.findById(billInfo.food)

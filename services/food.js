@@ -24,9 +24,17 @@ const newFood = async (food) => {
     }
 }
 
-const getAllFood = async () => {
+const getAllFood = async (allStatus) => {
     try {
-        const foods = await Food.find({ status: { $gte: 1 } })
+        let foods
+        if (allStatus) {
+            foods = await Food.find({}).populate('category').populate('reviews')
+        } else {
+            foods = await Food.find({ status: { $gte: 1 } })
+                .populate('category')
+                .populate('reviews')
+        }
+
         return foods
     } catch (error) {
         throw error
@@ -70,12 +78,20 @@ const updateFood = async (foodId, newFood) => {
                 throw err
             }
         }
-        const food = await Food.findByIdAndUpdate(foodId, newFood)
+
+        const food = await Food.findById(foodId)
         if (food === null) {
             const err = new Error('food is not exits')
             err.status = 404
             throw err
         }
+        if (newFood.quantity > 0 && food.status === 0) {
+            newFood.status = 1
+        }
+        if (newFood.quantity <= 0 && food.status === 1) {
+            newFood.status = 0
+        }
+        await food.updateOne(newFood)
     } catch (error) {
         throw error
     }

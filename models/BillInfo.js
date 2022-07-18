@@ -9,6 +9,9 @@ const BillInfoSchema = new Schema(
         priceOrder: {
             type: Number,
         },
+        saleOrder: {
+            type: Number,
+        },
         food: {
             type: Schema.Types.ObjectId,
             ref: 'Food',
