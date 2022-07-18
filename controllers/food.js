@@ -26,7 +26,11 @@ const newFood = async (req, res, next) => {
 //READ
 const getAllFood = async (req, res, next) => {
     try {
-        const foods = await foodService.getAllFood()
+        // console.log(req.query)
+        const { allStatus } = req.query
+        const isAllStatus = allStatus === 'true'
+        const foods = await foodService.getAllFood(isAllStatus)
+        // console.log(foods)
         return res.status(200).json({
             status: true,
             message: 'get all foods success!',
