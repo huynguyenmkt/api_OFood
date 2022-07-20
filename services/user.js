@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const Bill = require('../models/Bill')
 const User = require('../models/User')
 
 const secretString = process.env.JWT_SECRET
@@ -99,13 +100,25 @@ const getAllAddress = async (userId) => {
     }
 }
 
-const getAllBills = async (userId) => {
+const getAllBills = async (userId, page, limit, sortdate = -1) => {
     try {
-        const user = await User.findById(userId).populate({
-            path: 'bills',
-            populate: { path: 'billInfos' },
-        })
-        return user.bills
+        const options = {
+            sort: { createdAt: sortdate },
+            populate: 'billInfos',
+            limit,
+            page,
+        }
+        let bills
+        if (page && limit) {
+            bills = await Bill.paginate({ user: userId }, options)
+        } else {
+            const user = await User.findById(userId).populate({
+                path: 'bills',
+                populate: { path: 'billInfos' },
+            })
+            bills = user.bills
+        }
+        return bills
     } catch (error) {
         throw error
     }
