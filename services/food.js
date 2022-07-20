@@ -24,10 +24,11 @@ const newFood = async (food) => {
     }
 }
 
-const getAllFood = async (page, limit, sortdate = 1, name = '') => {
+const getAllFood = async (page, limit, sortPrice = 1, name = '', underPrice) => {
     try {
+        // console.log(underPrice)
         const options = {
-            sort: { createdAt: sortdate, status: -1 },
+            sort: { price: sortPrice, status: -1 },
             populate: 'category reviews',
             limit,
             page,
@@ -35,7 +36,7 @@ const getAllFood = async (page, limit, sortdate = 1, name = '') => {
         let foods
         if (page && limit) {
             foods = await Food.paginate(
-                { name: { $regex: '.*' + name + '.*' } },
+                { name: { $regex: '.*' + name + '.*' }, price: underPrice ? { $lte: underPrice } : { $gte: 0 } },
                 options
             )
         } else {

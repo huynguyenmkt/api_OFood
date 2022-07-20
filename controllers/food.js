@@ -27,8 +27,8 @@ const newFood = async (req, res, next) => {
 const getAllFood = async (req, res, next) => {
     try {
         // console.log(req.query)
-        const { page, limit, sortdate, name } = req.query
-        const foods = await foodService.getAllFood(page, limit, sortdate, name)
+        const { page, limit, sortPrice, name, underPrice } = req.query
+        const foods = await foodService.getAllFood(page, limit, sortPrice, name, underPrice)
         // console.log(foods)
         return res.status(200).json({
             status: true,
