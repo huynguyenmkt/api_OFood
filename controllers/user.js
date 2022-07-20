@@ -100,8 +100,14 @@ const getAllAddress = async (req, res, next) => {
 }
 const getAllBills = async (req, res, next) => {
     try {
+        const { page, limit, sortdate } = req.query
         const userId = req.user._id
-        const bills = await userService.getAllBills(userId)
+        const bills = await userService.getAllBills(
+            userId,
+            page,
+            limit,
+            sortdate
+        )
         return res.status(200).json({
             status: true,
             message: 'get bills success!',

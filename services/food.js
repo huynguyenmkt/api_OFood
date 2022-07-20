@@ -24,15 +24,22 @@ const newFood = async (food) => {
     }
 }
 
-const getAllFood = async (allStatus) => {
+const getAllFood = async (page, limit, sortdate = 1, name = '') => {
     try {
+        const options = {
+            sort: { createdAt: sortdate, status: -1 },
+            populate: 'category reviews',
+            limit,
+            page,
+        }
         let foods
-        if (allStatus) {
-            foods = await Food.find({}).populate('category').populate('reviews')
+        if (page && limit) {
+            foods = await Food.paginate(
+                { name: { $regex: '.*' + name + '.*' } },
+                options
+            )
         } else {
-            foods = await Food.find({ status: { $gte: 1 } })
-                .populate('category')
-                .populate('reviews')
+            foods = await Food.find().populate('category').populate('reviews')
         }
 
         return foods
