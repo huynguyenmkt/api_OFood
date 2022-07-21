@@ -76,7 +76,7 @@ const getUser = async (user) => {
 
 const getAllCart = async (userId) => {
     try {
-        const user = await User.findById(userId).populate('cart')
+        const user = await User.findById(userId).populate({ path: 'cart', populate: 'food' })
         if (user === null) {
             const err = new Error('user is not exits')
             err.status = 404

@@ -16,6 +16,15 @@ const newCart = async (foodId, cart, user) => {
         err.status = 400
         throw err
     }
+    const cartTemp = await Cart.find({ food: foodId })
+    // console.log(cartTemp)
+    if (cartTemp.length > 0) {
+        const err = new Error(
+            `${food.name} is already in your cart, please check again`
+        )
+        err.status = 400
+        throw err
+    }
     const newCart = new Cart(cart)
     // newCart.food = food._id
     newCart.user = user._id
@@ -24,7 +33,7 @@ const newCart = async (foodId, cart, user) => {
     user.cart.push(newCart._id)
     await user.save()
 
-    return newCart
+    return newCart.populate('food')
 }
 
 const getAllCart = async () => {
