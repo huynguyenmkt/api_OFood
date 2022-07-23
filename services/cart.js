@@ -16,7 +16,7 @@ const newCart = async (foodId, cart, user) => {
         err.status = 400
         throw err
     }
-    const cartTemp = await Cart.find({ food: foodId })
+    const cartTemp = await Cart.find({ food: foodId, user: user._id })
     // console.log(cartTemp)
     if (cartTemp.length > 0) {
         const err = new Error(
