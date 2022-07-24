@@ -107,6 +107,7 @@ const schemas = {
     addressSchema: Joi.object({
         houseNumber: Joi.string(),
         street: Joi.string().required(),
+        subDistrict: Joi.string().required(),
         district: Joi.string().required(),
         city: Joi.string().required(),
         country: Joi.string().required(),

@@ -9,6 +9,9 @@ const AddressSchema = new Schema(
         street: {
             type: String,
         },
+        subDistrict: {
+            type: String,
+        },
         district: {
             type: String,
         },

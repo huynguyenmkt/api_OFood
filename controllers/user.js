@@ -62,11 +62,12 @@ const getAllUser = async (req, res, next) => {
 const getUser = async (req, res, next) => {
     try {
         const user = req.user
-        const filterUser = await userService.getUser(user)
+        const result = await userService.getUser(user)
         return res.status(200).json({
             status: true,
             message: 'get users success!',
-            data: filterUser,
+            data: result.filterUser,
+            accessToken: result.token
         })
     } catch (error) {
         next(error)

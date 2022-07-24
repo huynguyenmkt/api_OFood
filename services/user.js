@@ -35,7 +35,7 @@ const newUser = async (user) => {
 
 const loginUser = async (userName, password) => {
     try {
-        const user = await User.findOne({ userName: userName })
+        const user = await User.findOne({ userName: userName }).populate('address')
         if (user === null) {
             const err = new Error('user name or password is wrong')
             err.status = 404
@@ -68,7 +68,8 @@ const getAllUser = async () => {
 const getUser = async (user) => {
     try {
         const { password, role, ...filterUser } = user._doc
-        return filterUser
+        const token = encodedToken(user._id)
+        return { filterUser, token }
     } catch (error) {
         throw error
     }

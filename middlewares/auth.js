@@ -17,7 +17,7 @@ const middlewareControllers = {
                         refresh: true,
                     })
                 }
-                const user = await User.findById(payload.sub)
+                const user = await User.findById(payload.sub).populate('address')
                 if (!user) {
                     return res.status(404).json({
                         status: false,
@@ -48,7 +48,7 @@ const middlewareControllers = {
                         refresh: true,
                     })
                 }
-                const user = await User.findById(payload.sub)
+                const user = await User.findById(payload.sub).populate('address')
                 if (!user) {
                     return res.status(404).json({
                         status: false,
@@ -87,7 +87,7 @@ const middlewareControllers = {
                         refresh: true,
                     })
                 }
-                const user = await User.findById(payload.sub)
+                const user = await User.findById(payload.sub).populate('address')
                 if (!user) {
                     return res.status(404).json({
                         status: false,
